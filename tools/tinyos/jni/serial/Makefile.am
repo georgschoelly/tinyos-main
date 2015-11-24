@@ -15,7 +15,7 @@ endif
 
 SOFLAGS = $(LIBFLAGS) "-I$(JDK)/include/linux" -shared -fPIC
 DLLFLAGS = $(LIBFLAGS) "-I$(JDK)/include/win32" -shared -D_JNI_IMPLEMENTATION -Wl,--kill-at -static-libgcc -static-libstdc++ -fno-rtti
-JNILIBFLAGS = $(LIBFLAGS) "-I$(JDK)/Headers" -bundle
+JNILIBFLAGS = $(LIBFLAGS) "-I$(JDK)/Headers" "-I$(JDK)/include/darwin" -bundle
 
 libtoscomm_common_SOURCES = \
   NativeSerialEnums.h

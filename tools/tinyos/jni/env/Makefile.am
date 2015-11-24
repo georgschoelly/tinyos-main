@@ -11,7 +11,7 @@ EXTRA_PROGRAMS = libgetenv.so getenv.dll libgetenv.jnilib
 LIBFLAGS = "-I$(JDK)/include" -s -O2
 SOFLAGS = $(LIBFLAGS) "-I$(JDK)/include/linux" -shared -fpic
 DLLFLAGS = $(LIBFLAGS) "-I$(JDK)/include/win32" -shared -D_JNI_IMPLEMENTATION -Wl,--kill-at
-JNILIBFLAGS = $(LIBFLAGS) "-I$(JDK)/Headers" -bundle -fPIC
+JNILIBFLAGS = $(LIBFLAGS) "-I$(JDK)/Headers" "-I$(JDK)/include/darwin" -bundle -fPIC
 
 #first file should be the main c/cpp file
 libgetenv_so_SOURCES = net_tinyos_util_Env.c net_tinyos_util_Env.h
