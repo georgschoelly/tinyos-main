@@ -4,6 +4,7 @@ MIGFLAGS = -D_POSIX_C_SOURCE
 TOS=../../../../tos
 SERIAL_H = $(TOS)/lib/serial/Serial.h
 TFLAGS = -I$(TOS)/types
+NFLAGS = -fnesc-gcc=$(CC)
 
 BUILT_SOURCES = serialpacket.h serialprotocol.h
 
@@ -35,7 +36,7 @@ libmote_a_SOURCES = \
 	sfsource.c
 
 serialpacket.c serialpacket.h: $(SERIAL_H)
-	nescc-mig -o serialpacket.h $(TFLAGS) -c-prefix=spacket c $(SERIAL_H) serial_packet $(MIGFLAGS)
+	nescc-mig $(NFLAGS) -o serialpacket.h $(TFLAGS) -c-prefix=spacket c $(SERIAL_H) serial_packet $(MIGFLAGS)
 
 serialprotocol.h: $(SERIAL_H)
-	nescc-ncg -o $@ $(TFLAGS) -c-prefix=SERIAL c $(SERIAL_H) Serial.h $(MIGFLAGS)
+	nescc-ncg $(NFLAGS) -o $@ $(TFLAGS) -c-prefix=SERIAL c $(SERIAL_H) Serial.h $(MIGFLAGS)

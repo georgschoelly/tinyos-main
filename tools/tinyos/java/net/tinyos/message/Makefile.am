@@ -7,6 +7,7 @@ include $(ROOT)/Makefile.include
 
 SERIAL_H = $(TINYOS_OS_DIR)/lib/serial/Serial.h
 TFLAGS = -I$(TINYOS_OS_DIR)/types
+NFLAGS = -fnesc-gcc=$(CC)
 
 SerialPacket.java: $(SERIAL_H)
-	nescc-mig -o $@ $(TFLAGS) -java-classname=net.tinyos.message.SerialPacket java $(SERIAL_H) serial_packet
+	nescc-mig $(NFLAGS) -o $@ $(TFLAGS) -java-classname=net.tinyos.message.SerialPacket java $(SERIAL_H) serial_packet

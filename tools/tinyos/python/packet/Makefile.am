@@ -9,6 +9,7 @@ BUILT_SOURCES = SerialH.py
 SERIAL_H = $(TINYOS_OS_DIR)/lib/serial/Serial.h
 TINYOS_OS_DIR ?= ../../../../tos
 TFLAGS = -I$(TINYOS_OS_DIR)/lib/serial -I$(TINYOS_OS_DIR)/types
+NFLAGS = -fnesc-gcc=$(CC)
 
 SerialH.py:
-	nescc-ncg -o $@ $(TFLAGS) -python-classname=Serial python $(SERIAL_H) Serial.h
+	nescc-ncg $(NFLAGS) -o $@ $(TFLAGS) -python-classname=Serial python $(SERIAL_H) Serial.h
