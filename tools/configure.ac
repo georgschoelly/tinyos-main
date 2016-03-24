@@ -115,7 +115,7 @@ AC_MSG_CHECKING(for location to put JARs)
 if test "$prefix" != "NONE"; then
     JAR_DIR="$prefix/lib/java"
 else
-    JAR_DIR=`/bin/sh tinyos/misc/tos-locate-jre --jni`/../ext
+    JAR_DIR=`/bin/sh tinyos/misc/tos-locate-jre --jar-dir`
 fi
 
 AC_MSG_RESULT($JAR_DIR)

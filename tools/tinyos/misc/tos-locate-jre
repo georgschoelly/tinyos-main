@@ -10,6 +10,7 @@
 # --java: directory with java executable
 # --javac: directory with javac executable
 # --jni: directory where JNI code is placed
+# --jar-dir: directory where JARs are placed
 
 if [ "$1" = "--jni" ]; then
     jni=yes
@@ -17,8 +18,10 @@ elif [ "$1" = "--java" ]; then
     java=yes
 elif [ "$1" = "--javac" ]; then
     javac=yes
+elif [ "$1" = "--jar-dir" ]; then
+    jardir=yes
 else
-    echo "Usage: tos-locate-jre --java|--javac|--jni" >&2
+    echo "Usage: tos-locate-jre --java|--javac|--jni|--jar-dir" >&2
     exit 2
 fi
 
@@ -117,9 +120,11 @@ case `uname` in
 esac
 
 # These are correct for Sun and IBM's x86 Java versions
-if [ "$jni" = "yes" ]; then
+locate_jni_dir() {
+    local jnidir
+
     jnilocate () {
-	dir="$1"
+	jnidir="$1"
 	test -d "$1"
     }
 
@@ -140,10 +145,23 @@ if [ "$jni" = "yes" ]; then
 	    jnilocate "$jhome/lib/amd64" || \
 	    jnilocate "$jhome/lib/arm"
     fi
+
+    echo "$jnidir"
+}
+
+if [ "$jni" = "yes" ]; then
+ dir=locate_jni_dir
 elif [ "$javac" = "yes" ]; then
  dir="$jhome/bin"
 elif [ "$java" = "yes" ]; then
  dir="$jhome/bin"
+elif [ "$jardir" = "yes" ]; then
+    # OS X stores JARs in a special folder
+    if [ `uname` = "Darwin" ]; then
+        dir="/Library/Java/Extensions"
+    else
+        dir=`locate_jni_dir`"/../ext"
+    fi
 fi
 
 # Check that what we found actually exists
