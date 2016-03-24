@@ -1,10 +1,16 @@
 #-*-Makefile-*- vim:syntax=make
 
-export GCC=gcc
-GPP=g++
+# clang is unsupported (checks for clang pretending to be gcc)
+ifneq "$(shell $(CC) --version 2>&1 | grep --count clang)" "0"
+$(error Clang unsupported. Please use another compiler, e.g. `CC=gcc-4.6 make micaz sim`)
+endif
+
+export CC
+CXX=$(CC) -x c++
+LINKER=$(CC)
 OPTFLAGS = -g -O0
 LIBS = -lm -lstdc++
-PFLAGS += -DTOSSIM -fnesc-nido-tosnodes=1000 -fnesc-simulate -fnesc-nido-motenumber='sim_node\(\)' -fnesc-gcc=$(GCC)
+PFLAGS += -DTOSSIM -fnesc-nido-tosnodes=1000 -fnesc-simulate -fnesc-nido-motenumber='sim_node\(\)' -fnesc-gcc=$(CC)
 PFLAGS += -I%T/lib/tossim
 WFLAGS = -Wno-nesc-data-race
 PYTHON_VERSION ?= $(shell python --version 2>&1 | sed 's/Python 2\.\([0-9]\)\.[0-9]+\{0,1\}/2.\1/')
@@ -70,12 +76,12 @@ sim-exe: build_dir $(TOSMAKE_PRE_EXE_DEPS) FORCE
 	$(NESC) -c $(PLATFORM_FLAGS) -o $(OBJFILE) $(OPTFLAGS) $(NESC_PFLAGS) $(CFLAGS) $(WFLAGS) $(COMPONENT).nc $(LDFLAGS)  $(DUMPTYPES) -fnesc-dumpfile=$(XML)
 
 	@echo -e '$(INFO_STRING) compiling Python support and C libraries into pytossim.o, tossim.o, and c-support.o'
-	$(GPP) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(PYOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(PYFILE) -I$(PYDIR) -I$(SIMDIR) -DHAVE_CONFIG_H
-	$(GPP) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(CXXOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(CXXFILE) -I$(PYDIR) -I$(SIMDIR)
-	$(GPP) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(HASHOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(HASHFILE) -I$(PYDIR) -I$(SIMDIR)
+	$(CXX) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(PYOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(PYFILE) -I$(PYDIR) -I$(SIMDIR) -DHAVE_CONFIG_H
+	$(CXX) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(CXXOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(CXXFILE) -I$(PYDIR) -I$(SIMDIR)
+	$(CXX) -c $(PLATFORM_CC_FLAGS) $(PLATFORM_FLAGS) -o $(HASHOBJFILE) $(OPTFLAGS) $(CFLAGS) $(SIM_ADDITIONAL_CFLAGS) $(HASHFILE) -I$(PYDIR) -I$(SIMDIR)
 
 	@echo -e '$(INFO_STRING) linking into shared object ./$(SHARED_OBJECT)'
-	$(GPP) $(PLATFORM_BUILD_FLAGS) $(PLATFORM_CC_FLAGS) $(PYOBJFILE) $(OBJFILE) $(CXXOBJFILE) $(HASHOBJFILE) $(SIM_ADDITIONAL_OBJS) $(PLATFORM_LIB_FLAGS) -o $(SHARED_OBJECT)
+	$(LINKER) $(PLATFORM_BUILD_FLAGS) $(PLATFORM_CC_FLAGS) $(PYOBJFILE) $(OBJFILE) $(CXXOBJFILE) $(HASHOBJFILE) $(SIM_ADDITIONAL_OBJS) $(PLATFORM_LIB_FLAGS) -o $(SHARED_OBJECT)
 
 	@echo -e '$(INFO_STRING) copying Python script interface TOSSIM.py from lib/tossim to local directory'
 	@cp $(TOSSIMPY_DIR)/TOSSIM.py .
